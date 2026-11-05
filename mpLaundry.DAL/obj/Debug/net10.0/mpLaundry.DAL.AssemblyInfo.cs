@@ -13,7 +13,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("mpLaundry.DAL")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+1f2e97b5bffc6e917c8a231df136079be8a658e6")]
 [assembly: System.Reflection.AssemblyProductAttribute("mpLaundry.DAL")]
 [assembly: System.Reflection.AssemblyTitleAttribute("mpLaundry.DAL")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

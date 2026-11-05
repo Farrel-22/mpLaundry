@@ -11,3 +11,16 @@ C:\Users\kalbe\mpLaundry\mpLaundry.Services\obj\Debug\net10.0\mpLaundr.F99326CD.
 C:\Users\kalbe\mpLaundry\mpLaundry.Services\obj\Debug\net10.0\mpLaundry.Services.dll
 C:\Users\kalbe\mpLaundry\mpLaundry.Services\obj\Debug\net10.0\refint\mpLaundry.Services.dll
 C:\Users\kalbe\mpLaundry\mpLaundry.Services\obj\Debug\net10.0\ref\mpLaundry.Services.dll
+C:\Users\kalbe\source\repos\mpLaundry\mpLaundry.Services\bin\Debug\net10.0\mpLaundry.Services.deps.json
+C:\Users\kalbe\source\repos\mpLaundry\mpLaundry.Services\bin\Debug\net10.0\mpLaundry.Services.dll
+C:\Users\kalbe\source\repos\mpLaundry\mpLaundry.Services\bin\Debug\net10.0\mpLaundry.Common.dll
+C:\Users\kalbe\source\repos\mpLaundry\mpLaundry.Services\bin\Debug\net10.0\mpLaundry.DAL.dll
+C:\Users\kalbe\source\repos\mpLaundry\mpLaundry.Services\obj\Debug\net10.0\mpLaundry.Services.csproj.AssemblyReference.cache
+C:\Users\kalbe\source\repos\mpLaundry\mpLaundry.Services\obj\Debug\net10.0\mpLaundry.Services.GeneratedMSBuildEditorConfig.editorconfig
+C:\Users\kalbe\source\repos\mpLaundry\mpLaundry.Services\obj\Debug\net10.0\mpLaundry.Services.AssemblyInfoInputs.cache
+C:\Users\kalbe\source\repos\mpLaundry\mpLaundry.Services\obj\Debug\net10.0\mpLaundry.Services.AssemblyInfo.cs
+C:\Users\kalbe\source\repos\mpLaundry\mpLaundry.Services\obj\Debug\net10.0\mpLaundry.Services.csproj.CoreCompileInputs.cache
+C:\Users\kalbe\source\repos\mpLaundry\mpLaundry.Services\obj\Debug\net10.0\mpLaundr.F99326CD.Up2Date
+C:\Users\kalbe\source\repos\mpLaundry\mpLaundry.Services\obj\Debug\net10.0\mpLaundry.Services.dll
+C:\Users\kalbe\source\repos\mpLaundry\mpLaundry.Services\obj\Debug\net10.0\refint\mpLaundry.Services.dll
+C:\Users\kalbe\source\repos\mpLaundry\mpLaundry.Services\obj\Debug\net10.0\ref\mpLaundry.Services.dll

@@ -1,17 +1,17 @@
 {
   "format": 1,
   "restore": {
-    "C:\\Users\\kalbe\\mpLaundry\\mpLaundry.Common\\mpLaundry.Common.csproj": {}
+    "C:\\Users\\kalbe\\source\\repos\\mpLaundry\\mpLaundry.Common\\mpLaundry.Common.csproj": {}
   },
   "projects": {
-    "C:\\Users\\kalbe\\mpLaundry\\mpLaundry.Common\\mpLaundry.Common.csproj": {
+    "C:\\Users\\kalbe\\source\\repos\\mpLaundry\\mpLaundry.Common\\mpLaundry.Common.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\Users\\kalbe\\mpLaundry\\mpLaundry.Common\\mpLaundry.Common.csproj",
+        "projectUniqueName": "C:\\Users\\kalbe\\source\\repos\\mpLaundry\\mpLaundry.Common\\mpLaundry.Common.csproj",
         "projectName": "mpLaundry.Common",
-        "projectPath": "C:\\Users\\kalbe\\mpLaundry\\mpLaundry.Common\\mpLaundry.Common.csproj",
+        "projectPath": "C:\\Users\\kalbe\\source\\repos\\mpLaundry\\mpLaundry.Common\\mpLaundry.Common.csproj",
         "packagesPath": "C:\\Users\\kalbe\\.nuget\\packages\\",
-        "outputPath": "C:\\Users\\kalbe\\mpLaundry\\mpLaundry.Common\\obj\\",
+        "outputPath": "C:\\Users\\kalbe\\source\\repos\\mpLaundry\\mpLaundry.Common\\obj\\",
         "projectStyle": "PackageReference",
         "fallbackFolders": [
           "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"
