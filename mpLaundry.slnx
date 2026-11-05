@@ -1,0 +1,6 @@
+<Solution>
+  <Project Path="mpLaundry.Common/mpLaundry.Common.csproj" />
+  <Project Path="mpLaundry.DAL/mpLaundry.DAL.csproj" />
+  <Project Path="mpLaundry.Services/mpLaundry.Services.csproj" />
+  <Project Path="mpLaundry/mpLaundry.csproj" />
+</Solution>

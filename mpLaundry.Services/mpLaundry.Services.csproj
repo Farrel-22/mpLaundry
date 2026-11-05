@@ -1,0 +1,25 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net10.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+    <RootNamespace>mpLaundry.Services</RootNamespace>
+    <NoWarn>CS8618;CS8603;CS8604;CS8602;CS8600;CS8601;CS0168</NoWarn>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Newtonsoft.Json" Version="13.0.4" />
+    <PackageReference Include="Serilog" Version="4.3.1" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <FrameworkReference Include="Microsoft.AspNetCore.App" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\mpLaundry.Common\mpLaundry.Common.csproj" />
+    <ProjectReference Include="..\mpLaundry.DAL\mpLaundry.DAL.csproj" />
+  </ItemGroup>
+
+</Project>
