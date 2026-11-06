@@ -26,4 +26,8 @@
     <ProjectReference Include="..\mpLaundry.Common\mpLaundry.Common.csproj" />
   </ItemGroup>
 
+	<ItemGroup>
+		<FrameworkReference Include="Microsoft.AspNetCore.App" />
+	</ItemGroup>
 </Project>
+
