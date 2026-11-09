@@ -22,8 +22,4 @@
     <ProjectReference Include="..\mpLaundry.Services\mpLaundry.Services.csproj" />
   </ItemGroup>
 
-  <ItemGroup>
-    <Folder Include="View\" />
-  </ItemGroup>
-
 </Project>

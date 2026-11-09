@@ -20,6 +20,7 @@ public static class ServiceCollectionExtensions
         // ── Service Layer ──
         services.AddScoped<ILayananService, LayananService>();
         services.AddScoped<IPelangganService, PelangganService>();
+        services.AddScoped<ILaundryService, LaundryService>();
 
         return services;
     }
