@@ -1,0 +1,67 @@
+@model MLayanan
+@{
+    ViewData["Title"] = "Detail Layanan";
+}
+
+<h4 class="mb-3"><i class="bi bi-eye"></i> Detail Layanan</h4>
+
+<div class="card">
+    <div class="card-body">
+        <table class="table table-bordered mb-0">
+            <tr>
+                <th style="width:200px" class="bg-light">Kode Layanan</th>
+                <td><code>@Model.TxtKodeLayanan</code></td>
+            </tr>
+            <tr>
+                <th class="bg-light">Nama Layanan</th>
+                <td>@Model.TxtNamaLayanan</td>
+            </tr>
+            <tr>
+                <th class="bg-light">Satuan</th>
+                <td>@Model.TxtSatuan</td>
+            </tr>
+            <tr>
+                <th class="bg-light">Harga</th>
+                <td class="fw-bold text-primary">@Format.Rupiah(Model.DecHarga)</td>
+            </tr>
+            <tr>
+                <th class="bg-light">Estimasi Pengerjaan</th>
+                <td>@Model.IntEstimasiHari hari</td>
+            </tr>
+            <tr>
+                <th class="bg-light">Status</th>
+                <td>
+                    @if (Model.BolActive)
+                    {
+                        <span class="badge badge-aktif">Aktif</span>
+                    }
+                    else
+                    {
+                        <span class="badge badge-nonaktif">Nonaktif</span>
+                    }
+                </td>
+            </tr>
+            <tr>
+                <th class="bg-light">Dibuat</th>
+                <td>@Format.Tanggal(Model.DtInserted)</td>
+            </tr>
+            @if (Model.DtUpdated.HasValue)
+            {
+                <tr>
+                    <th class="bg-light">Terakhir Diubah</th>
+                    <td>@Format.Tanggal(Model.DtUpdated.Value)</td>
+                </tr>
+            }
+        </table>
+    </div>
+</div>
+
+<div class="mt-3 d-flex gap-2">
+    <a asp-action="Edit" asp-route-id="@Model.PkLayananId" class="btn btn-warning">
+        <i class="bi bi-pencil-square"></i> Edit
+    </a>
+    <a asp-action="Index" class="btn btn-outline-secondary">
+        <i class="bi bi-arrow-left"></i> Kembali
+    </a>
+</div>
+

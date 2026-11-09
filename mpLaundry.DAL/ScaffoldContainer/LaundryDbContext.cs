@@ -30,17 +30,17 @@ public partial class LaundryDbContext : DbContext
             entity.HasIndex(e => e.TxtKodeLayanan, "UQ_mLayanan_txtKodeLayanan").IsUnique();
 
             entity.Property(e => e.PkLayananId)
-                .HasDefaultValueSql("(newsequentialid())", "DF_mLayanan_pk")
+                .HasDefaultValueSql("gen_random_uuid()")
                 .HasColumnName("pkLayananId");
             entity.Property(e => e.BolActive).HasColumnName("bolActive");
             entity.Property(e => e.DecHarga)
                 .HasColumnType("decimal(18, 2)")
                 .HasColumnName("decHarga");
             entity.Property(e => e.DtInserted)
-                .HasColumnType("datetime")
+                .HasColumnType("timestamp")
                 .HasColumnName("dtInserted");
             entity.Property(e => e.DtUpdated)
-                .HasColumnType("datetime")
+                .HasColumnType("timestamp   ")
                 .HasColumnName("dtUpdated");
             entity.Property(e => e.IntEstimasiHari).HasColumnName("intEstimasiHari");
             entity.Property(e => e.RefInsertedBy)
@@ -69,14 +69,14 @@ public partial class LaundryDbContext : DbContext
             entity.HasIndex(e => e.TxtKodePelanggan, "UQ_mPelanggan_txtKodePelanggan").IsUnique();
 
             entity.Property(e => e.PkPelangganId)
-                .HasDefaultValueSql("(newsequentialid())", "DF_mPelanggan_pk")
+                .HasDefaultValueSql("gen_random_uuid()")
                 .HasColumnName("pkPelangganId");
             entity.Property(e => e.BolActive).HasColumnName("bolActive");
             entity.Property(e => e.DtInserted)
-                .HasColumnType("datetime")
+                .HasColumnType("timestamp")
                 .HasColumnName("dtInserted");
             entity.Property(e => e.DtUpdated)
-                .HasColumnType("datetime")
+                .HasColumnType("timestamp")
                 .HasColumnName("dtUpdated");
             entity.Property(e => e.RefInsertedBy)
                 .HasMaxLength(50)
@@ -114,7 +114,7 @@ public partial class LaundryDbContext : DbContext
             entity.HasIndex(e => e.TxtNoOrder, "UQ_trLaundry_txtNoOrder").IsUnique();
 
             entity.Property(e => e.PkLaundryId)
-                .HasDefaultValueSql("(newsequentialid())", "DF_trLaundry_pk")
+                .HasDefaultValueSql("gen_random_uuid()")
                 .HasColumnName("pkLaundryId");
             entity.Property(e => e.BolLunas).HasColumnName("bolLunas");
             entity.Property(e => e.DecBayar)
@@ -124,19 +124,19 @@ public partial class LaundryDbContext : DbContext
                 .HasColumnType("decimal(18, 2)")
                 .HasColumnName("decTotalHarga");
             entity.Property(e => e.DtDiambil)
-                .HasColumnType("datetime")
+                .HasColumnType("timestamp")
                 .HasColumnName("dtDiambil");
             entity.Property(e => e.DtEstimasiSelesai)
-                .HasColumnType("datetime")
+                .HasColumnType("timestamp")
                 .HasColumnName("dtEstimasiSelesai");
             entity.Property(e => e.DtInserted)
-                .HasColumnType("datetime")
+                .HasColumnType("timestamp")
                 .HasColumnName("dtInserted");
             entity.Property(e => e.DtMasuk)
-                .HasColumnType("datetime")
+                .HasColumnType("timestamp")
                 .HasColumnName("dtMasuk");
             entity.Property(e => e.DtUpdated)
-                .HasColumnType("datetime")
+                .HasColumnType("timestamp")
                 .HasColumnName("dtUpdated");
             entity.Property(e => e.RefInsertedBy)
                 .HasMaxLength(50)
@@ -172,7 +172,7 @@ public partial class LaundryDbContext : DbContext
             entity.HasIndex(e => e.RefLayananId, "IX_trLaundryDetail_refLayananId");
 
             entity.Property(e => e.PkLaundryDetailId)
-                .HasDefaultValueSql("(newsequentialid())", "DF_trLaundryDetail_pk")
+                .HasDefaultValueSql("gen_random_uuid()")
                 .HasColumnName("pkLaundryDetailId");
             entity.Property(e => e.DecHargaSatuan)
                 .HasColumnType("decimal(18, 2)")
@@ -184,10 +184,10 @@ public partial class LaundryDbContext : DbContext
                 .HasColumnType("decimal(18, 2)")
                 .HasColumnName("decSubtotal");
             entity.Property(e => e.DtInserted)
-                .HasColumnType("datetime")
+                .HasColumnType("timestamp")
                 .HasColumnName("dtInserted");
             entity.Property(e => e.DtUpdated)
-                .HasColumnType("datetime")
+                .HasColumnType("timestamp")
                 .HasColumnName("dtUpdated");
             entity.Property(e => e.RefInsertedBy)
                 .HasMaxLength(50)

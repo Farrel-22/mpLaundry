@@ -1,0 +1,53 @@
+﻿@model MPelanggan
+@{
+    ViewData["Title"] = "Tambah Pelanggan";
+}
+
+<h4 class="mb-3"><i class="bi bi-person-plus"></i> Tambah Pelanggan Baru</h4>
+
+<div class="card">
+    <div class="card-body">
+        <form asp-action="Create" method="post">
+            @Html.AntiForgeryToken()
+            <div asp-validation-summary="ModelOnly" class="alert alert-danger"></div>
+
+            <div class="row mb-3">
+                <div class="col-md-6">
+                    <label asp-for="TxtKodePelanggan" class="form-label"></label>
+                    <input asp-for="TxtKodePelanggan" class="form-control" placeholder="Contoh: PLG001" maxlength="10" />
+                    <span asp-validation-for="TxtKodePelanggan" class="text-danger small"></span>
+                </div>
+                <div class="col-md-6">
+                    <label asp-for="TxtNama" class="form-label"></label>
+                    <input asp-for="TxtNama" class="form-control" placeholder="Contoh: Budi Santoso" maxlength="100" />
+                    <span asp-validation-for="TxtNama" class="text-danger small"></span>
+                </div>
+            </div>
+
+            <div class="row mb-3">
+                <div class="col-md-6">
+                    <label asp-for="TxtNoTelepon" class="form-label"></label>
+                    <input asp-for="TxtNoTelepon" class="form-control" placeholder="Contoh: 081234567890" maxlength="20" />
+                    <span asp-validation-for="TxtNoTelepon" class="text-danger small"></span>
+                </div>
+                <div class="col-md-6">
+                    <label asp-for="TxtEmail" class="form-label"></label>
+                    <input asp-for="TxtEmail" class="form-control" type="email" placeholder="Contoh: budi@mail.com" maxlength="100" />
+                    <span asp-validation-for="TxtEmail" class="text-danger small"></span>
+                </div>
+            </div>
+
+            <div class="mb-3">
+                <label asp-for="TxtAlamat" class="form-label"></label>
+                <textarea asp-for="TxtAlamat" class="form-control" rows="3" placeholder="Alamat lengkap pelanggan..." maxlength="200"></textarea>
+                <span asp-validation-for="TxtAlamat" class="text-danger small"></span>
+            </div>
+
+            <hr />
+            <div class="d-flex gap-2">
+                <button type="submit" class="btn btn-primary"><i class="bi bi-save"></i> Simpan</button>
+                <a asp-action="Index" class="btn btn-outline-secondary"><i class="bi bi-x-lg"></i> Batal</a>
+            </div>
+        </form>
+    </div>
+</div>

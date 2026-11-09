@@ -1,0 +1,67 @@
+﻿@model MPelanggan
+@{
+    ViewData["Title"] = "Detail Pelanggan";
+}
+
+<h4 class="mb-3"><i class="bi bi-person-lines-fill"></i> Detail Pelanggan</h4>
+
+<div class="card">
+    <div class="card-body">
+        <table class="table table-bordered mb-0">
+            <tr>
+                <th style="width:200px" class="bg-light">Kode Pelanggan</th>
+                <td><code>@Model.TxtKodePelanggan</code></td>
+            </tr>
+            <tr>
+                <th class="bg-light">Nama Pelanggan</th>
+                <td class="fw-bold">@Model.TxtNama</td>
+            </tr>
+            <tr>
+                <th class="bg-light">No. Telepon</th>
+                <td>@Model.TxtNoTelepon</td>
+            </tr>
+            <tr>
+                <th class="bg-light">Email</th>
+                <td>@(Model.TxtEmail ?? "-")</td>
+            </tr>
+            <tr>
+                <th class="bg-light">Alamat</th>
+                <td>@(Model.TxtAlamat ?? "-")</td>
+            </tr>
+            <tr>
+                <th class="bg-light">Status</th>
+                <td>
+                    @if (Model.BolActive)
+                    {
+                        <span class="badge badge-aktif">Aktif</span>
+                    }
+                    else
+                    {
+                        <span class="badge badge-nonaktif">Nonaktif</span>
+                    }
+                </td>
+            </tr>
+            <!-- Menampilkan Jejak Audit Otomatis (Read-Only) -->
+            <tr>
+                <th class="bg-light">Tanggal Terdaftar</th>
+                <td>@Format.Tanggal(Model.DtInserted)</td>
+            </tr>
+            @if (Model.DtUpdated.HasValue)
+            {
+                <tr>
+                    <th class="bg-light">Terakhir Diubah</th>
+                    <td>@Format.Tanggal(Model.DtUpdated.Value)</td>
+                </tr>
+            }
+        </table>
+    </div>
+</div>
+
+<div class="mt-3 d-flex gap-2">
+    <a asp-action="Edit" asp-route-id="@Model.PkPelangganId" class="btn btn-warning">
+        <i class="bi bi-pencil-square"></i> Edit
+    </a>
+    <a asp-action="Index" class="btn btn-outline-secondary">
+        <i class="bi bi-arrow-left"></i> Kembali
+    </a>
+</div>

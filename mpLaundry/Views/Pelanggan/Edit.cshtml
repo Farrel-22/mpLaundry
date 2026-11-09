@@ -1,0 +1,65 @@
+﻿@model MPelanggan
+@{
+    ViewData["Title"] = "Edit Pelanggan";
+}
+
+<h4 class="mb-3"><i class="bi bi-pencil-square"></i> Edit Pelanggan</h4>
+
+<div class="card">
+    <div class="card-body">
+        <form asp-action="Edit" method="post">
+            @Html.AntiForgeryToken()
+            <!-- Primary Key wajib disembunyikan agar Controller tahu ID mana yang di-update -->
+            <input type="hidden" asp-for="PkPelangganId" />
+            
+            <div asp-validation-summary="ModelOnly" class="alert alert-danger"></div>
+
+            <div class="row mb-3">
+                <div class="col-md-6">
+                    <label asp-for="TxtKodePelanggan" class="form-label"></label>
+                    <input asp-for="TxtKodePelanggan" class="form-control" maxlength="10" />
+                    <span asp-validation-for="TxtKodePelanggan" class="text-danger small"></span>
+                </div>
+                <div class="col-md-6">
+                    <label asp-for="TxtNama" class="form-label"></label>
+                    <input asp-for="TxtNama" class="form-control" maxlength="100" />
+                    <span asp-validation-for="TxtNama" class="text-danger small"></span>
+                </div>
+            </div>
+
+            <div class="row mb-3">
+                <div class="col-md-6">
+                    <label asp-for="TxtNoTelepon" class="form-label"></label>
+                    <input asp-for="TxtNoTelepon" class="form-control" maxlength="20" />
+                    <span asp-validation-for="TxtNoTelepon" class="text-danger small"></span>
+                </div>
+                <div class="col-md-6">
+                    <label asp-for="TxtEmail" class="form-label"></label>
+                    <input asp-for="TxtEmail" class="form-control" type="email" maxlength="100" />
+                    <span asp-validation-for="TxtEmail" class="text-danger small"></span>
+                </div>
+            </div>
+
+            <div class="mb-3">
+                <label asp-for="TxtAlamat" class="form-label"></label>
+                <textarea asp-for="TxtAlamat" class="form-control" rows="3" maxlength="200"></textarea>
+                <span asp-validation-for="TxtAlamat" class="text-danger small"></span>
+            </div>
+
+            <!-- Switch Status Aktif / Nonaktif -->
+            <div class="mb-3">
+                <div class="form-check form-switch">
+                    <input asp-for="BolActive" class="form-check-input" type="checkbox" />
+                    <label asp-for="BolActive" class="form-check-label">Pelanggan Aktif</label>
+                </div>
+                <small class="text-muted">Jika dinonaktifkan, nama pelanggan ini tidak akan muncul saat kasir membuat nota cucian baru.</small>
+            </div>
+
+            <hr />
+            <div class="d-flex gap-2">
+                <button type="submit" class="btn btn-primary"><i class="bi bi-save"></i> Simpan Perubahan</button>
+                <a asp-action="Index" class="btn btn-outline-secondary"><i class="bi bi-x-lg"></i> Batal</a>
+            </div>
+        </form>
+    </div>
+</div>

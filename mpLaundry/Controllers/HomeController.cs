@@ -2,13 +2,10 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace mpLaundry.Controllers;
 
-[ApiController]
-[Route("[controller]")]
-public class HomeController : ControllerBase
+public class HomeController : Controller
 {
-    [HttpGet]
-    public IActionResult Get()
+    public IActionResult Index()
     {
-        return Ok(new { Message = "mpLaundry API is running" });
+        return View();
     }
 }
