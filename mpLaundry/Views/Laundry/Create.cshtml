@@ -1,0 +1,239 @@
+﻿@model LaundryCreateVM
+@{
+    ViewData["Title"] = "Buat Order Baru";
+
+    // Data Layanan yang dikirim dari controller (List<MLayanan>)
+    var daftarLayanan = ViewBag.Layanan as List<MLayanan> ?? new List<MLayanan>();
+}
+
+<h4 class="mb-3"><i class="bi bi-receipt-cutoff"></i> Form Order Laundry</h4>
+
+<form asp-action="Create" method="post" id="formOrder">
+    @Html.AntiForgeryToken()
+
+    <div asp-validation-summary="ModelOnly" class="alert alert-danger" role="alert"></div>
+
+    @* ═══════════ BAGIAN 1: INFO ORDER ═══════════ *@
+    <div class="card mb-3">
+        <div class="card-header bg-primary text-white">
+            <i class="bi bi-info-circle"></i> Informasi Order
+        </div>
+        <div class="card-body">
+            <div class="row mb-3">
+                <div class="col-md-4">
+                    <label asp-for="TanggalMasuk" class="form-label"></label>
+                    <input asp-for="TanggalMasuk" class="form-control" type="date" />
+                </div>
+                <div class="col-md-4">
+                    <label asp-for="PelangganId" class="form-label"></label>
+                    <select asp-for="PelangganId" asp-items="@(ViewBag.Pelanggan as SelectList)"
+                            class="form-select">
+                        <option value="">— Pilih Pelanggan —</option>
+                    </select>
+                    <span asp-validation-for="PelangganId" class="text-danger small"></span>
+                </div>
+                <div class="col-md-4">
+                    <label asp-for="Bayar" class="form-label"></label>
+                    <div class="input-group">
+                        <span class="input-group-text">Rp</span>
+                        <input asp-for="Bayar" class="form-control" type="number"
+                               min="0" step="1000" placeholder="0" />
+                    </div>
+                    <span asp-validation-for="Bayar" class="text-danger small"></span>
+                </div>
+            </div>
+            <div class="mb-0">
+                <label asp-for="Keterangan" class="form-label"></label>
+                <textarea asp-for="Keterangan" class="form-control" rows="2"
+                          placeholder="Catatan tambahan (opsional)"></textarea>
+            </div>
+        </div>
+    </div>
+
+    @* ═══════════ BAGIAN 2: TABEL ITEM LAYANAN (DINAMIS) ═══════════ *@
+    <div class="card mb-3">
+        <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
+            <span><i class="bi bi-basket2"></i> Item Layanan Cucian</span>
+            <button type="button" class="btn btn-sm btn-light" id="btnTambahItem">
+                <i class="bi bi-plus-lg"></i> Tambah Item
+            </button>
+        </div>
+        <div class="card-body p-0">
+            <div class="table-responsive">
+                <table class="table table-hover mb-0" id="tabelItem">
+                    <thead class="table-light">
+                        <tr>
+                            <th style="width:5%">#</th>
+                            <th style="width:30%">Layanan</th>
+                            <th style="width:12%">Qty</th>
+                            <th style="width:10%">Satuan</th>
+                            <th style="width:15%" class="text-end">Harga</th>
+                            <th style="width:18%" class="text-end">Subtotal</th>
+                            <th style="width:10%">Aksi</th>
+                        </tr>
+                    </thead>
+                    <tbody id="tbodyItem">
+                        @* Baris akan di-generate oleh JavaScript *@
+                    </tbody>
+                    <tfoot>
+                        <tr class="table-light fw-bold">
+                            <td colspan="5" class="text-end">Total Estimasi :</td>
+                            <td class="text-end" id="tdEstimasi">0 hari</td>
+                            <td></td>
+                        </tr>
+                        <tr class="table-primary fw-bold">
+                            <td colspan="5" class="text-end fs-5">Grand Total :</td>
+                            <td class="text-end fs-5" id="tdGrandTotal">Rp 0</td>
+                            <td></td>
+                        </tr>
+                    </tfoot>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    @* ═══════════ BAGIAN 3: TOMBOL AKSI ═══════════ *@
+    <div class="d-flex gap-2 mb-4">
+        <button type="submit" class="btn btn-primary" id="btnSimpan">
+            <i class="bi bi-save"></i> Simpan Order
+        </button>
+        <a asp-action="Index" class="btn btn-outline-secondary">
+            <i class="bi bi-x-lg"></i> Batal
+        </a>
+    </div>
+</form>
+
+@section Scripts {
+<script>
+    // ── Data layanan dari server (di-serialize ke JSON) ──
+    const layananList = @Html.Raw(System.Text.Json.JsonSerializer.Serialize(
+        daftarLayanan.Select(l => new {
+            id    = l.PkLayananId,
+            nama  = l.TxtNamaLayanan,
+            harga = l.DecHarga,
+            satuan = l.TxtSatuan,
+            estimasi = l.IntEstimasiHari
+        })
+    ));
+
+    const tbody = document.getElementById('tbodyItem');
+
+    // ── Tambah 1 baris item baru ke tabel ──
+    function tambahBaris() {
+        const i = tbody.rows.length; // index baris berikutnya
+
+        // Buat <option> untuk dropdown layanan
+        let opsiLayanan = '<option value="">— Pilih —</option>';
+        layananList.forEach(l => {
+            opsiLayanan += `<option value="${l.id}"
+                data-harga="${l.harga}" data-satuan="${l.satuan}"
+                data-estimasi="${l.estimasi}">${l.nama}</option>`;
+        });
+
+        const tr = document.createElement('tr');
+        tr.innerHTML = `
+            <td class="align-middle text-center fw-bold">${i + 1}</td>
+            <td>
+                <select name="Items[${i}].LayananId" class="form-select selLayanan"
+                        required>
+                    ${opsiLayanan}
+                </select>
+            </td>
+            <td>
+                <input name="Items[${i}].Qty" type="number" class="form-control inpQty"
+                       min="0.01" step="0.1" value="1" required />
+            </td>
+            <td class="align-middle tdSatuan">-</td>
+            <td class="align-middle text-end tdHarga">Rp 0</td>
+            <td class="align-middle text-end tdSubtotal fw-bold">Rp 0</td>
+            <td class="align-middle text-center">
+                <button type="button" class="btn btn-sm btn-outline-danger btnHapus"
+                        title="Hapus baris">
+                    <i class="bi bi-trash"></i>
+                </button>
+            </td>
+        `;
+        tbody.appendChild(tr);
+        bindEventsBaris(tr);
+    }
+
+    // ── Bind event change & input pada 1 baris ──
+    function bindEventsBaris(tr) {
+        const sel = tr.querySelector('.selLayanan');
+        const inp = tr.querySelector('.inpQty');
+        const btnDel = tr.querySelector('.btnHapus');
+
+        sel.addEventListener('change', () => hitungBaris(tr));
+        inp.addEventListener('input',  () => hitungBaris(tr));
+        btnDel.addEventListener('click', () => {
+            tr.remove();
+            reindex();
+            hitungTotal();
+        });
+    }
+
+    // ── Hitung subtotal 1 baris ──
+    function hitungBaris(tr) {
+        const sel   = tr.querySelector('.selLayanan');
+        const qty   = parseFloat(tr.querySelector('.inpQty').value) || 0;
+        const opt   = sel.options[sel.selectedIndex];
+
+        const harga   = parseFloat(opt.dataset.harga)   || 0;
+        const satuan  = opt.dataset.satuan  || '-';
+
+        tr.querySelector('.tdSatuan').textContent   = satuan;
+        tr.querySelector('.tdHarga').textContent     = formatRp(harga);
+        tr.querySelector('.tdSubtotal').textContent  = formatRp(harga * qty);
+
+        hitungTotal();
+    }
+
+    // ── Hitung grand total & estimasi terlama ──
+    function hitungTotal() {
+        let total = 0;
+        let maxEstimasi = 0;
+
+        tbody.querySelectorAll('tr').forEach(tr => {
+            const sel = tr.querySelector('.selLayanan');
+            const qty = parseFloat(tr.querySelector('.inpQty').value) || 0;
+            const opt = sel.options[sel.selectedIndex];
+            const harga = parseFloat(opt.dataset.harga) || 0;
+            const estimasi = parseInt(opt.dataset.estimasi) || 0;
+
+            total += harga * qty;
+            if (estimasi > maxEstimasi) maxEstimasi = estimasi;
+        });
+
+        document.getElementById('tdGrandTotal').textContent = formatRp(total);
+        document.getElementById('tdEstimasi').textContent   = maxEstimasi + ' hari';
+    }
+
+    // ── Re-index name attribute & nomor urut setelah hapus baris ──
+    function reindex() {
+        tbody.querySelectorAll('tr').forEach((tr, i) => {
+            tr.querySelector('td:first-child').textContent = i + 1;
+            tr.querySelector('.selLayanan').name = `Items[${i}].LayananId`;
+            tr.querySelector('.inpQty').name     = `Items[${i}].Qty`;
+        });
+    }
+
+    // ── Format angka jadi "Rp 12.500" ──
+    function formatRp(n) {
+        return 'Rp ' + Math.round(n).toLocaleString('id-ID');
+    }
+
+    // ── Validasi minimal 1 item sebelum submit ──
+    document.getElementById('formOrder').addEventListener('submit', function(e) {
+        if (tbody.rows.length === 0) {
+            e.preventDefault();
+            alert('Tambahkan minimal 1 item layanan!');
+        }
+    });
+
+    // ── Event tombol Tambah Item ──
+    document.getElementById('btnTambahItem').addEventListener('click', tambahBaris);
+
+    // ── Otomatis tambah 1 baris saat halaman dibuka ──
+    tambahBaris();
+</script>
+}
