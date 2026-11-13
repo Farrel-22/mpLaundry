@@ -1,0 +1,200 @@
+﻿@model TrLaundry
+@using mpLaundry.Common
+@using mpLaundry.Common.Helpers
+@{
+    ViewData["Title"] = "Nota Order " + Model.TxtNoOrder;
+    // Cek status berikutnya dalam alur (Diterima -> Diproses -> Selesai -> Diambil)
+    var berikutnya = StatusLaundry.Berikutnya(Model.TxtStatus);
+    // Hitung sisa tagihan
+    var sisa = Model.DecTotalHarga - Model.DecBayar;
+}
+<div class="row justify-content-center">
+    <div class="col-lg-10">
+        @* ═══════════ HEADER NOTA ═══════════ *@
+        <div class="card mb-3 shadow-sm border-0">
+            <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center py-3">
+                <h4 class="mb-0">
+                    <i class="bi bi-receipt"></i> Nota Order <span id="noOrder" class="fw-bold">@Model.TxtNoOrder</span>
+                </h4>
+                <div class="d-flex gap-2">
+                    <span class="badge bg-light text-dark fs-6" id="status">
+                        <i class="bi bi-clock-history"></i> @Model.TxtStatus
+                    </span>
+                    <span class="badge @(Model.BolLunas ? "bg-success" : "bg-warning text-dark") fs-6">
+                        <i class="bi @(Model.BolLunas ? "bi-check-circle" : "bi-exclamation-circle")"></i>
+                        @(Model.BolLunas ? "LUNAS" : "BELUM LUNAS")
+                    </span>
+                </div>
+            </div>
+            <div class="card-body">
+                @* ═══════════ INFORMASI PELANGGAN & TANGGAL ═══════════ *@
+                <div class="row g-3">
+                    <div class="col-md-6">
+                        <h6 class="text-muted text-uppercase fw-bold small">Informasi Pelanggan</h6>
+                        <table class="table table-borderless table-sm mb-0">
+                            <tr>
+                                <th style="width: 35%;" class="ps-0">Nama</th>
+                                <td>: <strong>@Model.RefPelanggan.TxtNama</strong></td>
+                            </tr>
+                            <tr>
+                                <th class="ps-0">No. Telepon</th>
+                                <td>: @Model.RefPelanggan.TxtNoTelepon</td>
+                            </tr>
+                            <tr>
+                                <th class="ps-0">Alamat</th>
+                                <td>: @(string.IsNullOrEmpty(Model.RefPelanggan.TxtAlamat) ? "-" : Model.RefPelanggan.TxtAlamat)</td>
+                            </tr>
+                        </table>
+                    </div>
+                    <div class="col-md-6 border-start-md">
+                        <h6 class="text-muted text-uppercase fw-bold small">Informasi Waktu</h6>
+                        <table class="table table-borderless table-sm mb-0">
+                            <tr>
+                                <th style="width: 45%;" class="ps-0">Tanggal Masuk</th>
+                                <td>: @Format.Tanggal(Model.DtMasuk)</td>
+                            </tr>
+                            <tr>
+                                <th class="ps-0">Estimasi Selesai</th>
+                                <td>: <span id="estimasi" class="fw-bold text-primary">@Format.Tanggal(Model.DtEstimasiSelesai)</span></td>
+                            </tr>
+                            @if (Model.DtDiambil is DateTime diambil)
+                            {
+                                <tr>
+                                    <th class="ps-0">Tanggal Diambil</th>
+                                    <td>: <span class="badge bg-success">@Format.Tanggal(diambil)</span></td>
+                                </tr>
+                            }
+                            @if (!string.IsNullOrEmpty(Model.TxtKeterangan))
+                            {
+                                <tr>
+                                    <th class="ps-0">Keterangan</th>
+                                    <td>: <span class="fst-italic text-muted">@Model.TxtKeterangan</span></td>
+                                </tr>
+                            }
+                        </table>
+                    </div>
+                </div>
+                <hr class="my-4" />
+                @* ═══════════ TABEL RINCIAN CUCIAN ═══════════ *@
+                <h6 class="text-muted text-uppercase fw-bold small mb-3">Rincian Cucian</h6>
+                <div class="table-responsive mb-3">
+                    <table class="table table-bordered table-striped align-middle mb-0">
+                        <thead class="table-light">
+                            <tr>
+                                <th style="width: 5%;" class="text-center">#</th>
+                                <th>Layanan</th>
+                                <th style="width: 15%;" class="text-center">Qty</th>
+                                <th style="width: 18%;" class="text-end">Harga Satuan</th>
+                                <th style="width: 18%;" class="text-end">Subtotal</th>
+                                <th>Catatan</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @{
+                                int no = 1;
+                            }
+                            @foreach (var d in Model.TrLaundryDetail)
+                            {
+                                <tr class="det">
+                                    <td class="text-center">@(no++)</td>
+                                    <td class="fw-semibold">@d.RefLayanan.TxtNamaLayanan</td>
+                                    <td class="text-center">
+                                        <span class="badge bg-secondary">
+                                            @Format.Angka(d.DecQty) @d.RefLayanan.TxtSatuan
+                                        </span>
+                                    </td>
+                                    <td class="text-end">@Format.Rupiah(d.DecHargaSatuan)</td>
+                                    <td class="text-end fw-bold">@Format.Rupiah(d.DecSubtotal)</td>
+                                    <td class="small text-muted">@(string.IsNullOrEmpty(d.TxtCatatan) ? "-" : d.TxtCatatan)</td>
+                                </tr>
+                            }
+                        </tbody>
+                        <tfoot class="table-light">
+                            <tr>
+                                <th colspan="4" class="text-end">Total Biaya :</th>
+                                <th class="text-end text-primary fs-6" id="total">@Format.Rupiah(Model.DecTotalHarga)</th>
+                                <th></th>
+                            </tr>
+                            <tr>
+                                <th colspan="4" class="text-end">Sudah Dibayar :</th>
+                                <th class="text-end text-success fs-6" id="dibayar">@Format.Rupiah(Model.DecBayar)</th>
+                                <th></th>
+                            </tr>
+                            <tr class="@(sisa > 0 ? "table-warning" : "table-success")">
+                                <th colspan="4" class="text-end">Sisa Tagihan :</th>
+                                <th class="text-end fw-bold fs-6 @(sisa > 0 ? "text-danger" : "text-success")" id="sisa">
+                                    @Format.Rupiah(sisa)
+                                </th>
+                                <th></th>
+                            </tr>
+                        </tfoot>
+                    </table>
+                </div>
+                @* ═══════════ TOMBOL AKSI KASIR ═══════════ *@
+                <div class="d-flex flex-wrap gap-2 mt-4 pt-3 border-top d-print-none">
+                    @* 1. Tombol Majukan Status *@
+                    @if (berikutnya is not null)
+                    {
+                        <form asp-action="UpdateStatus" asp-route-id="@Model.PkLaundryId" method="post">
+                            @Html.AntiForgeryToken()
+                            <button type="submit" class="btn btn-primary">
+                                <i class="bi bi-arrow-right-circle"></i> Ubah Status ke: <strong>@berikutnya</strong>
+                            </button>
+                        </form>
+                    }
+                    @* 2. Form Pelunasan Pembayaran *@
+                    @if (sisa > 0)
+                    {
+                        <form asp-action="Bayar" asp-route-id="@Model.PkLaundryId" method="post" class="d-flex gap-2">
+                            @Html.AntiForgeryToken()
+                            <div class="input-group" style="width: 220px;">
+                                <span class="input-group-text">Rp</span>
+                                <input type="number" name="jumlah" min="1" max="@sisa" value="@sisa"
+                                       class="form-control" required />
+                            </div>
+                            <button type="submit" class="btn btn-success">
+                                <i class="bi bi-cash-coin"></i> Bayar
+                            </button>
+                        </form>
+                    }
+                    @* 3. Tombol Hapus Order (Hanya jika status masih Diterima) *@
+                    @if (Model.TxtStatus == StatusLaundry.Diterima)
+                    {
+                        <form asp-action="Delete" asp-route-id="@Model.PkLaundryId" method="post"
+                              onsubmit="return confirm('Apakah Anda yakin ingin membatalkan/menghapus order ini?')">
+                            @Html.AntiForgeryToken()
+                            <button type="submit" class="btn btn-outline-danger">
+                                <i class="bi bi-trash"></i> Hapus Order
+                            </button>
+                        </form>
+                    }
+                    @* 4. Tombol Cetak Nota *@
+                    <button type="button" class="btn btn-outline-secondary" onclick="window.print()">
+                        <i class="bi bi-printer"></i> Cetak Nota
+                    </button>
+                    @* 5. Tombol Kembali *@
+                    <a asp-action="Index" class="btn btn-link text-decoration-none ms-auto">
+                        <i class="bi bi-arrow-left"></i> Kembali ke Daftar Order
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+@* Styling khusus agar saat dicetak (Print), tombol dan navigasi tidak ikut tercetak *@
+<style>
+    @@media print {
+        .navbar, .d-print-none, .btn, footer {
+            display: none !important;
+        }
+
+        body {
+            background-color: #fff !important;
+        }
+
+        .card {
+            border: 1px solid #ddd !important;
+            box-shadow: none !important;
+        }
+    }
+</style>    

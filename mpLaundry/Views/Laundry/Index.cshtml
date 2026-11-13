@@ -1,0 +1,132 @@
+﻿@model List<TrLaundry>
+@using mpLaundry.Common
+@using mpLaundry.Common.Helpers
+@{
+    ViewData["Title"] = "Daftar Order Laundry";
+}
+
+<div class="d-flex justify-content-between align-items-center mb-3">
+    <h4 class="mb-0"><i class="bi bi-receipt"></i> Daftar Order Laundry</h4>
+    <a asp-action="Create" class="btn btn-primary">
+        <i class="bi bi-plus-lg"></i> Buat Order Baru
+    </a>
+</div>
+
+@* ═══════════ FORM FILTER TANGGAL & STATUS ═══════════ *@
+<div class="card mb-3">
+    <div class="card-body py-2">
+        <form method="get" asp-action="Index" class="row g-2 align-items-end">
+            <div class="col-md-3">
+                <label class="form-label small text-muted mb-1">Dari Tanggal:</label>
+                <input type="date" name="dari" value="@(ViewBag.Dari != null ? ((DateTime)ViewBag.Dari).ToString("yyyy-MM-dd") : "")"
+                       class="form-control form-control-sm" />
+            </div>
+            <div class="col-md-3">
+                <label class="form-label small text-muted mb-1">Sampai Tanggal:</label>
+                <input type="date" name="sampai" value="@(ViewBag.Sampai != null ? ((DateTime)ViewBag.Sampai).ToString("yyyy-MM-dd") : "")"
+                       class="form-control form-control-sm" />
+            </div>
+            <div class="col-md-3">
+                <label class="form-label small text-muted mb-1">Status Cucian:</label>
+                <select name="status" asp-items="@(ViewBag.Status as SelectList)" class="form-select form-select-sm">
+                    <option value="">— Semua Status —</option>
+                </select>
+            </div>
+            <div class="col-md-3 d-flex gap-1">
+                <button type="submit" class="btn btn-sm btn-outline-primary flex-grow-1">
+                    <i class="bi bi-filter"></i> Filter
+                </button>
+                <a asp-action="Index" class="btn btn-sm btn-outline-secondary">
+                    <i class="bi bi-arrow-counterclockwise"></i> Reset
+                </a>
+            </div>
+        </form>
+    </div>
+</div>
+
+@* ═══════════ TABEL DAFTAR ORDER ═══════════ *@
+<div class="card shadow-sm border-0">
+    <div class="card-body p-0">
+        <div class="table-responsive">
+            <table class="table table-hover table-striped align-middle mb-0">
+                <thead class="table-primary">
+                    <tr>
+                        <th style="width: 50px;" class="text-center">#</th>
+                        <th>No. Order</th>
+                        <th>Tgl Masuk</th>
+                        <th>Pelanggan</th>
+                        <th>Estimasi</th>
+                        <th class="text-end">Total Biaya</th>
+                        <th class="text-center">Status Cucian</th>
+                        <th class="text-center">Pembayaran</th>
+                        <th class="text-center" style="width: 100px;">Aksi</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @if (Model.Count == 0)
+                    {
+                        <tr>
+                            <td colspan="9" class="text-center text-muted py-4">
+                                <i class="bi bi-inbox fs-3 d-block mb-1"></i>
+                                Belum ada data transaksi order yang sesuai filter.
+                            </td>
+                        </tr>
+                    }
+                    else
+                    {
+                        var no = 1;
+                        @foreach (var item in Model)
+                        {
+                            <tr>
+                                <td class="text-center">@(no++)</td>
+                                <td>
+                                    <a asp-action="Details" asp-route-id="@item.PkLaundryId" class="fw-bold text-decoration-none">
+                                        @item.TxtNoOrder
+                                    </a>
+                                </td>
+                                <td>@Format.Tanggal(item.DtMasuk)</td>
+                                <td class="fw-semibold">
+                                    @item.RefPelanggan.TxtNama
+                                    <span class="text-muted small d-block">@item.RefPelanggan.TxtNoTelepon</span>
+                                </td>
+                                <td>@Format.Tanggal(item.DtEstimasiSelesai)</td>
+                                <td class="text-end fw-bold">@Format.Rupiah(item.DecTotalHarga)</td>
+                                <td class="text-center">
+                                    @if (item.TxtStatus == StatusLaundry.Diterima)
+                                    {
+                                        <span class="badge bg-secondary">Diterima</span>
+                                    }
+                                    else if (item.TxtStatus == StatusLaundry.Diproses)
+                                    {
+                                        <span class="badge bg-info text-dark">Diproses</span>
+                                    }
+                                    else if (item.TxtStatus == StatusLaundry.Selesai)
+                                    {
+                                        <span class="badge bg-primary">Selesai</span>
+                                    }
+                                    else if (item.TxtStatus == StatusLaundry.Diambil)
+                                    {
+                                        <span class="badge bg-success">Diambil</span>
+                                    }
+                                </td>
+                                <td class="text-center">
+                                    <span class="badge @(item.BolLunas ? "bg-success" : "bg-warning text-dark")">
+                                        @(item.BolLunas ? "LUNAS" : "BELUM LUNAS")
+                                    </span>
+                                </td>
+                                <td class="text-center">
+                                    <a asp-action="Details" asp-route-id="@item.PkLaundryId"
+                                       class="btn btn-sm btn-outline-primary" title="Lihat Nota / Rincian">
+                                        <i class="bi bi-receipt"></i> Nota
+                                    </a>
+                                </td>
+                            </tr>
+                        }
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<div class="text-muted small mt-2">Total Transaksi: @Model.Count order</div>
