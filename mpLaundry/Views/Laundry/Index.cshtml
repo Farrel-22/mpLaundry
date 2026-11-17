@@ -89,7 +89,18 @@
                                     @item.RefPelanggan.TxtNama
                                     <span class="text-muted small d-block">@item.RefPelanggan.TxtNoTelepon</span>
                                 </td>
-                                <td>@Format.Tanggal(item.DtEstimasiSelesai)</td>
+                                 <td>
+                                    @Format.Tanggal(item.DtEstimasiSelesai)
+
+                                    @* Cek apakah cucian melewati batas estimasi dan belum selesai *@
+                                    @if (DateTime.Today > item.DtEstimasiSelesai.Date && 
+                                        (item.TxtStatus == StatusLaundry.Diterima || item.TxtStatus == StatusLaundry.Diproses))
+                                    {
+                                        <span class="badge bg-danger ms-1">
+                                            <i class="bi bi-exclamation-triangle-fill"></i> Terlambat
+                                         </span>
+                                    }
+                                </td>
                                 <td class="text-end fw-bold">@Format.Rupiah(item.DecTotalHarga)</td>
                                 <td class="text-center">
                                     @if (item.TxtStatus == StatusLaundry.Diterima)

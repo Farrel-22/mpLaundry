@@ -1,4 +1,4 @@
-﻿using mpLaundry.Common;
+using mpLaundry.Common;
 using mpLaundry.Common.ViewModels;
 using mpLaundry.DAL.ScaffoldContainer;
 
@@ -23,4 +23,7 @@ public interface ILaundryService
 
     // 6. Batalkan / hapus order (Hanya boleh jika status masih 'Diterima')
     Task<ServiceResult> DeleteAsync(Guid id);
+
+    // 7. Ringkasan statistik untuk halaman Dashboard
+    Task<DashboardVM> GetDashboardAsync();
 }

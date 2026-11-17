@@ -1,47 +1,240 @@
+@model DashboardVM
 @{
-    ViewData["Title"] = "Beranda";
+    ViewData["Title"] = "Dashboard Operasional";
+
+    // Hitung persentase lunas untuk progress bar
+    var persenLunas = Model.TotalOrder > 0
+        ? (int)Math.Round((double)Model.OrderLunas / Model.TotalOrder * 100)
+        : 0;
 }
 
-<div class="text-center py-5">
-    <h1 class="display-4 fw-bold text-primary">
-        <i class="bi bi-droplet-fill"></i> Bersih Laundry
-    </h1>
-    <p class="lead text-muted mt-3">
-        Sistem Informasi Manajemen Laundry — ASP.NET Core MVC (.NET 10)
-    </p>
-    <hr class="my-4" />
+<!-- ═══════════ HEADER HALAMAN (WARNA LEMBUT & BERSIH) ═══════════ -->
+<div class="d-flex justify-content-between align-items-center mb-3">
+    <div>
+        <div class="d-flex align-items-center gap-2 mb-1">
+            <h5 class="fw-bold mb-0 text-dark" style="letter-spacing: -0.01em;">Dashboard Operasional</h5>
+            <span class="badge bg-primary-subtle text-primary border border-primary-subtle px-2 py-0" style="font-size: 0.7rem;">Realtime Kasir</span>
+        </div>
+        <span class="text-secondary small">Ringkasan status pengerjaan cucian dan pembukuan kas kasir</span>
+    </div>
+    <div class="d-none d-sm-flex align-items-center gap-2">
+        <span class="badge bg-white text-secondary border px-3 py-2 small fw-normal shadow-sm rounded-pill">
+            <i class="bi bi-receipt-cutoff text-primary me-1"></i> Total Transaksi: <strong class="text-dark">@Model.TotalOrder</strong> Order
+        </span>
+    </div>
+</div>
 
-    <div class="row justify-content-center g-4 mt-2">
-        <div class="col-md-3">
-            <div class="card text-center p-4">
-                <i class="bi bi-gear display-4 text-primary"></i>
-                <h5 class="mt-3">Master Layanan</h5>
-                <p class="text-muted small">Kelola jenis layanan & harga</p>
-                <a asp-controller="Layanan" asp-action="Index" class="btn btn-outline-primary btn-sm">
-                    Buka <i class="bi bi-arrow-right"></i>
-                </a>
+<!-- ═══════════ ROW 1: 4 STATUS PENGERJAAN CUCIAN (BERWARNA & SEGAR) ═══════════ -->
+<div class="row g-3 mb-3">
+    <!-- 1. DITERIMA (Biru Lembut) -->
+    <div class="col-sm-6 col-xl-3">
+        <div class="card card-stat h-100 p-3" style="background-color: #F0F7FF; border: 1px solid #BFDBFE;">
+            <div class="d-flex justify-content-between align-items-center mb-2">
+                <span class="d-inline-flex align-items-center gap-2 small fw-bold text-primary">
+                    <span style="width: 8px; height: 8px; border-radius: 50%; background-color: #2563EB;"></span>
+                    1. Diterima
+                </span>
+                <span class="badge bg-primary text-white" style="font-size: 0.68rem; font-weight: 500;">Antrean Baru</span>
             </div>
+            <div class="d-flex align-items-baseline justify-content-between">
+                <div>
+                    <div class="fs-3 fw-bold text-primary lh-1 mb-1">@Model.OrderDiterima</div>
+                    <span class="text-secondary small">Order antre dicuci</span>
+                </div>
+                <div class="rounded-3 p-2 d-flex align-items-center justify-content-center" style="background-color: #DBEAFE; color: #1D4ED8; width: 40px; height: 40px;">
+                    <i class="bi bi-inbox-fill fs-5"></i>
+                </div>
+            </div>
+            <hr class="my-2" style="border-color: #BFDBFE; opacity: 0.7;" />
+            <a asp-controller="Laundry" asp-action="Index" asp-route-status="Diterima"
+               class="small text-primary text-decoration-none fw-semibold d-flex align-items-center justify-content-between">
+                <span>Lihat antrean</span>
+                <i class="bi bi-chevron-right" style="font-size: 0.75rem;"></i>
+            </a>
         </div>
-        <div class="col-md-3">
-            <div class="card text-center p-4">
-                <i class="bi bi-people display-4 text-success"></i>
-                <h5 class="mt-3">Master Pelanggan</h5>
-                <p class="text-muted small">Kelola data pelanggan</p>
-                <a asp-controller="Pelanggan" asp-action="Index" class="btn btn-outline-success btn-sm">
-                    Buka <i class="bi bi-arrow-right"></i>
-                </a>
+    </div>
+
+    <!-- 2. DIPROSES (Kuning/Amber Hangat) -->
+    <div class="col-sm-6 col-xl-3">
+        <div class="card card-stat h-100 p-3" style="background-color: #FFFBEB; border: 1px solid #FDE68A;">
+            <div class="d-flex justify-content-between align-items-center mb-2">
+                <span class="d-inline-flex align-items-center gap-2 small fw-bold" style="color: #B45309;">
+                    <span style="width: 8px; height: 8px; border-radius: 50%; background-color: #D97706;"></span>
+                    2. Diproses
+                </span>
+                <span class="badge text-white" style="background-color: #D97706; font-size: 0.68rem; font-weight: 500;">Pengerjaan</span>
             </div>
+            <div class="d-flex align-items-baseline justify-content-between">
+                <div>
+                    <div class="fs-3 fw-bold lh-1 mb-1" style="color: #92400E;">@Model.OrderDiproses</div>
+                    <span class="text-secondary small">Sedang cuci / setrika</span>
+                </div>
+                <div class="rounded-3 p-2 d-flex align-items-center justify-content-center" style="background-color: #FEF3C7; color: #B45309; width: 40px; height: 40px;">
+                    <i class="bi bi-arrow-repeat fs-5"></i>
+                </div>
+            </div>
+            <hr class="my-2" style="border-color: #FDE68A; opacity: 0.7;" />
+            <a asp-controller="Laundry" asp-action="Index" asp-route-status="Diproses"
+               class="small text-decoration-none fw-semibold d-flex align-items-center justify-content-between" style="color: #B45309;">
+                <span>Lihat proses</span>
+                <i class="bi bi-chevron-right" style="font-size: 0.75rem;"></i>
+            </a>
         </div>
-        <div class="col-md-3">
-            <div class="card text-center p-4">
-                <i class="bi bi-receipt display-4 text-warning"></i>
-                <h5 class="mt-3">Order Laundry</h5>
-                <p class="text-muted small">Buat & kelola order cucian</p>
-                <a asp-controller="Order" asp-action="Index" class="btn btn-outline-warning btn-sm">
-                    Buka <i class="bi bi-arrow-right"></i>
-                </a>
+    </div>
+
+    <!-- 3. SELESAI (Cyan/Teal Segar) -->
+    <div class="col-sm-6 col-xl-3">
+        <div class="card card-stat h-100 p-3" style="background-color: #ECFEFF; border: 1px solid #A5F3FC;">
+            <div class="d-flex justify-content-between align-items-center mb-2">
+                <span class="d-inline-flex align-items-center gap-2 small fw-bold" style="color: #0E7490;">
+                    <span style="width: 8px; height: 8px; border-radius: 50%; background-color: #0891B2;"></span>
+                    3. Selesai
+                </span>
+                <span class="badge text-white" style="background-color: #0891B2; font-size: 0.68rem; font-weight: 500;">Siap Ambil</span>
             </div>
+            <div class="d-flex align-items-baseline justify-content-between">
+                <div>
+                    <div class="fs-3 fw-bold lh-1 mb-1" style="color: #155E75;">@Model.OrderSelesai</div>
+                    <span class="text-secondary small">Menunggu pelanggan</span>
+                </div>
+                <div class="rounded-3 p-2 d-flex align-items-center justify-content-center" style="background-color: #CFFAFE; color: #0E7490; width: 40px; height: 40px;">
+                    <i class="bi bi-check2-circle fs-5"></i>
+                </div>
+            </div>
+            <hr class="my-2" style="border-color: #A5F3FC; opacity: 0.7;" />
+            <a asp-controller="Laundry" asp-action="Index" asp-route-status="Selesai"
+               class="small text-decoration-none fw-semibold d-flex align-items-center justify-content-between" style="color: #0E7490;">
+                <span>Siap serahkan</span>
+                <i class="bi bi-chevron-right" style="font-size: 0.75rem;"></i>
+            </a>
+        </div>
+    </div>
+
+    <!-- 4. DIAMBIL (Hijau/Emerald Lembut) -->
+    <div class="col-sm-6 col-xl-3">
+        <div class="card card-stat h-100 p-3" style="background-color: #F0FDF4; border: 1px solid #BBF7D0;">
+            <div class="d-flex justify-content-between align-items-center mb-2">
+                <span class="d-inline-flex align-items-center gap-2 small fw-bold text-success">
+                    <span style="width: 8px; height: 8px; border-radius: 50%; background-color: #16A34A;"></span>
+                    4. Diambil
+                </span>
+                <span class="badge bg-success text-white" style="font-size: 0.68rem; font-weight: 500;">Selesai</span>
+            </div>
+            <div class="d-flex align-items-baseline justify-content-between">
+                <div>
+                    <div class="fs-3 fw-bold text-success lh-1 mb-1">@Model.OrderDiambil</div>
+                    <span class="text-secondary small">Sudah diserahkan</span>
+                </div>
+                <div class="rounded-3 p-2 d-flex align-items-center justify-content-center" style="background-color: #DCFCE7; color: #15803D; width: 40px; height: 40px;">
+                    <i class="bi bi-bag-check-fill fs-5"></i>
+                </div>
+            </div>
+            <hr class="my-2" style="border-color: #BBF7D0; opacity: 0.7;" />
+            <a asp-controller="Laundry" asp-action="Index" asp-route-status="Diambil"
+               class="small text-success text-decoration-none fw-semibold d-flex align-items-center justify-content-between">
+                <span>Riwayat order</span>
+                <i class="bi bi-chevron-right" style="font-size: 0.75rem;"></i>
+            </a>
         </div>
     </div>
 </div>
 
+<!-- ═══════════ ROW 2: FINANSIAL, PEMBAYARAN & MASTER DATA ═══════════ -->
+<div class="row g-3">
+    <!-- Card 1: Total Kas Diterima (Nuansa Hijau Sukses - Ter-reset Setiap Hari) -->
+    <div class="col-lg-4">
+        <div class="card card-stat h-100 p-3" style="background: linear-gradient(180deg, #F0FDF4 0%, #FFFFFF 100%); border: 1px solid #BBF7D0;">
+            <div class="d-flex justify-content-between align-items-center mb-2">
+                <span class="small fw-bold text-success">
+                    <i class="bi bi-wallet2 me-1"></i> Total Kas Diterima (Hari Ini)
+                </span>
+                <span class="badge bg-success-subtle text-success border border-success-subtle" style="font-size: 0.7rem;">Reset Harian</span>
+            </div>
+            <div class="my-2">
+                <div class="fs-4 fw-bold text-success lh-1 mb-1">@Format.Rupiah(Model.TotalPendapatan)</div>
+                <span class="text-secondary small" style="font-size: 0.8rem;">
+                    Total kas masuk dari order hari ini. Otomatis ter-reset setiap hari baru.
+                </span>
+            </div>
+            <div class="mt-auto pt-2 border-top d-flex justify-content-between align-items-center" style="border-color: #DCFCE7 !important;">
+                <span class="text-secondary small">Order Hari Ini:</span>
+                <span class="fw-bold text-dark small">@Model.TotalOrderHariIni Order</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Card 2: Status Pembayaran (Visual Progress Dua Warna) -->
+    <div class="col-lg-4">
+        <div class="card card-stat h-100 p-3" style="background-color: #FFFFFF; border: 1px solid #E2E8F0;">
+            <div class="d-flex justify-content-between align-items-center mb-2">
+                <span class="small fw-bold text-dark">
+                    <i class="bi bi-credit-card-2-front text-primary me-1"></i> Status Pembayaran
+                </span>
+                <span class="badge bg-primary-subtle text-primary border border-primary-subtle" style="font-size: 0.7rem;">@persenLunas% Lunas</span>
+            </div>
+
+            <!-- Mini Progress Bar Berwarna -->
+            <div class="progress my-2" style="height: 7px; background-color: #F1F5F9; border-radius: 6px; overflow: hidden;">
+                <div class="progress-bar bg-success" role="progressbar" style="width: @persenLunas%;" aria-valuenow="@persenLunas" aria-valuemin="0" aria-valuemax="100"></div>
+                <div class="progress-bar bg-danger" role="progressbar" style="width: @(100 - persenLunas)%;" aria-valuenow="@(100 - persenLunas)" aria-valuemin="0" aria-valuemax="100"></div>
+            </div>
+
+            <div class="d-flex justify-content-between align-items-center mt-3 pt-1">
+                <div class="d-flex align-items-center gap-2">
+                    <span class="badge bg-success-subtle text-success border border-success-subtle px-2 py-1">
+                        <i class="bi bi-check-circle-fill me-1"></i> Lunas: @Model.OrderLunas
+                    </span>
+                </div>
+                <div class="d-flex align-items-center gap-2">
+                    <span class="badge bg-danger-subtle text-danger border border-danger-subtle px-2 py-1">
+                        <i class="bi bi-exclamation-circle-fill me-1"></i> Belum Lunas: @Model.OrderBelumLunas
+                    </span>
+                </div>
+            </div>
+
+            <div class="mt-auto pt-2 border-top text-secondary small" style="font-size: 0.78rem;">
+                Pelunasan tagihan wajib diselesaikan sebelum cucian diambil.
+            </div>
+        </div>
+    </div>
+
+    <!-- Card 3: Data Master Aktif (Blok Berwarna Ungu & Biru) -->
+    <div class="col-lg-4">
+        <div class="card card-stat h-100 p-3" style="background-color: #FFFFFF; border: 1px solid #E2E8F0;">
+            <div class="d-flex justify-content-between align-items-center mb-2">
+                <span class="small fw-bold text-dark">
+                    <i class="bi bi-database-check text-primary me-1"></i> Data Master Aktif
+                </span>
+                <span class="badge bg-info-subtle text-info-emphasis border border-info-subtle" style="font-size: 0.7rem;">Tersedia</span>
+            </div>
+
+            <div class="row g-2 my-1">
+                <!-- Pelanggan Aktif (Ungu Lembut) -->
+                <div class="col-6">
+                    <div class="p-2 rounded-2" style="background-color: #FAF5FF; border: 1px solid #E9D5FF;">
+                        <div class="text-secondary small" style="font-size: 0.75rem;">Pelanggan</div>
+                        <div class="fs-5 fw-bold" style="color: #6B21A8;">@Model.TotalPelanggan</div>
+                        <a asp-controller="Pelanggan" asp-action="Index" class="small text-decoration-none fw-semibold" style="color: #7E22CE; font-size: 0.75rem;">
+                            Kelola &rarr;
+                        </a>
+                    </div>
+                </div>
+
+                <!-- Layanan Aktif (Biru Lembut) -->
+                <div class="col-6">
+                    <div class="p-2 rounded-2" style="background-color: #F0F7FF; border: 1px solid #BFDBFE;">
+                        <div class="text-secondary small" style="font-size: 0.75rem;">Layanan</div>
+                        <div class="fs-5 fw-bold" style="color: #1E40AF;">@Model.TotalLayanan</div>
+                        <a asp-controller="Layanan" asp-action="Index" class="small text-decoration-none fw-semibold" style="color: #2563EB; font-size: 0.75rem;">
+                            Kelola &rarr;
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <div class="mt-auto pt-2 border-top text-secondary small" style="font-size: 0.78rem;">
+                Hanya data master bertatus aktif yang dapat dipilih di order baru.
+            </div>
+        </div>
+    </div>
+</div>

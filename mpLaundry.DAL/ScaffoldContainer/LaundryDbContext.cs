@@ -40,7 +40,7 @@ public partial class LaundryDbContext : DbContext
                 .HasColumnType("timestamp")
                 .HasColumnName("dtInserted");
             entity.Property(e => e.DtUpdated)
-                .HasColumnType("timestamp   ")
+                .HasColumnType("timestamp")
                 .HasColumnName("dtUpdated");
             entity.Property(e => e.IntEstimasiHari).HasColumnName("intEstimasiHari");
             entity.Property(e => e.RefInsertedBy)

@@ -1,5 +1,7 @@
 using mpLaundry.Services.Infrastructure;
 
+AppContext.SetSwitch("Npgsql.EnableLegacyTimestampBehavior", true);
+
 var builder = WebApplication.CreateBuilder(args);
 
 // ── Services ──

@@ -11,6 +11,8 @@ public interface IPelangganService
 
     Task<MPelanggan?> GetByIdAsync(Guid id);
 
+    Task<string> GenerateKodeAsync();
+
     Task<ServiceResult> CreateAsync(MPelanggan pelanggan);
 
     Task<ServiceResult> UpdateAsync(MPelanggan pelanggan);

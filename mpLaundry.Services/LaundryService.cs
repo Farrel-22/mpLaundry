@@ -1,4 +1,4 @@
-﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore;
 using mpLaundry.Common;
 using mpLaundry.Common.Helpers;
 using mpLaundry.Common.ViewModels;
@@ -38,8 +38,16 @@ public class LaundryService(LaundryDbContext db) : ILaundryService
     // 3. Simpan Transaksi Baru (Header & Detail)
     public async Task<ServiceResult> CreateAsync(LaundryCreateVM vm)
     {
-        // A. Validasi seluruh layanan yang dipilih kasir
+        // 1. Validasi TC-05: Minimal 1 item layanan harus ada
+        if (vm.Items == null || vm.Items.Count == 0)
+            return ServiceResult.Gagal("Minimal 1 item layanan harus dipilih.");
+
+        // 2. Validasi BR-03: Mencegah layanan ganda dalam 1 order
         var ids = vm.Items.Select(i => i.LayananId!.Value).ToList();
+        if (ids.Distinct().Count() != ids.Count)
+            return ServiceResult.Gagal("Terdapat layanan ganda. Mohon gabungkan kuantitas untuk layanan yang sama.");
+
+        // A. Validasi seluruh layanan yang dipilih kasir
         var layanan = await db.MLayanan
             .Where(l => ids.Contains(l.PkLayananId))
             .ToDictionaryAsync(l => l.PkLayananId);
@@ -172,7 +180,70 @@ public class LaundryService(LaundryDbContext db) : ILaundryService
         return ServiceResult.Ok($"Order {order.TxtNoOrder} berhasil dihapus.");
     }
 
-    // 7. Helper Pembuatan Nomor Order Otomatis (LD-yyyyMMdd-NNNN)
+    // 7. Ringkasan statistik untuk halaman Dashboard
+    public async Task<DashboardVM> GetDashboardAsync()
+    {
+        var vm = new DashboardVM();
+
+        // Hitung order berdasarkan status
+        var statusCounts = await db.TrLaundry.AsNoTracking()
+            .GroupBy(x => x.TxtStatus)
+            .Select(g => new { Status = g.Key, Count = g.Count() })
+            .ToListAsync();
+
+        vm.OrderDiterima = statusCounts.FirstOrDefault(x => x.Status == StatusLaundry.Diterima)?.Count ?? 0;
+        vm.OrderDiproses = statusCounts.FirstOrDefault(x => x.Status == StatusLaundry.Diproses)?.Count ?? 0;
+        vm.OrderSelesai = statusCounts.FirstOrDefault(x => x.Status == StatusLaundry.Selesai)?.Count ?? 0;
+        vm.OrderDiambil = statusCounts.FirstOrDefault(x => x.Status == StatusLaundry.Diambil)?.Count ?? 0;
+        vm.TotalOrder = vm.OrderDiterima + vm.OrderDiproses + vm.OrderSelesai + vm.OrderDiambil;
+
+        // Ringkasan Keuangan & Pembayaran
+        var hariIni = DateTime.Today;
+        var besok = hariIni.AddDays(1);
+
+        vm.OrderBelumLunas = await db.TrLaundry.AsNoTracking().CountAsync(x => !x.BolLunas);
+        vm.OrderLunas = await db.TrLaundry.AsNoTracking().CountAsync(x => x.BolLunas);
+
+        // Kas diterima HARI INI (otomatis ter-reset setiap hari)
+        vm.TotalPendapatan = await db.TrLaundry.AsNoTracking()
+            .Where(x => x.DtMasuk >= hariIni && x.DtMasuk < besok)
+            .SumAsync(x => (decimal?)x.DecBayar) ?? 0m;
+
+        // Akumulasi kas keseluruhan
+        vm.TotalPendapatanSemua = await db.TrLaundry.AsNoTracking().SumAsync(x => (decimal?)x.DecBayar) ?? 0m;
+
+        // Total order yang masuk hari ini
+        vm.TotalOrderHariIni = await db.TrLaundry.AsNoTracking().CountAsync(x => x.DtMasuk >= hariIni && x.DtMasuk < besok);
+
+        // Data Master Aktif
+        vm.TotalPelanggan = await db.MPelanggan.AsNoTracking().CountAsync(x => x.BolActive);
+        vm.TotalLayanan = await db.MLayanan.AsNoTracking().CountAsync(x => x.BolActive);
+
+        // 5 Order Terbaru
+        vm.RecentOrders = await db.TrLaundry.AsNoTracking()
+            .Include(l => l.RefPelanggan)
+            .OrderByDescending(l => l.DtMasuk)
+            .ThenByDescending(l => l.TxtNoOrder)
+            .Take(5)
+            .Select(l => new DashboardRecentOrderVM
+            {
+                Id = l.PkLaundryId,
+                NoOrder = l.TxtNoOrder,
+                NamaPelanggan = l.RefPelanggan.TxtNama,
+                NoHpPelanggan = l.RefPelanggan.TxtNoTelepon,
+                TanggalMasuk = l.DtMasuk,
+                EstimasiSelesai = l.DtEstimasiSelesai,
+                Status = l.TxtStatus,
+                TotalHarga = l.DecTotalHarga,
+                Bayar = l.DecBayar,
+                BolLunas = l.BolLunas
+            })
+            .ToListAsync();
+
+        return vm;
+    }
+
+    // 8. Helper Pembuatan Nomor Order Otomatis (LD-yyyyMMdd-NNNN)
     private async Task<string> BuatNoOrderAsync(DateTime tanggal)
     {
         var prefix = $"LD-{tanggal:yyyyMMdd}-";

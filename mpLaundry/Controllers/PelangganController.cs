@@ -34,11 +34,11 @@ public class PelangganController : Controller
     }
 
     // 4. CREATE (GET): Buka form input pelanggan baru
-    public IActionResult Create()
+    public async Task<IActionResult> Create()
     {
         var model = new MPelanggan
         {
-            BolActive = true // default langsung aktif
+            TxtKodePelanggan = await _svc.GenerateKodeAsync() // Otomatis terisi kode baru
         };
         return View(model);
     }

@@ -1,4 +1,5 @@
 using Microsoft.AspNetCore.Mvc;
+using mpLaundry.Common;
 using mpLaundry.DAL.ScaffoldContainer;
 using mpLaundry.Services.Interfaces;
 
@@ -13,9 +14,7 @@ public class LayananController : Controller
         _svc = svc;
     }
 
-    // ──────────────────────────────────────────────
     //  INDEX — Daftar semua layanan + pencarian
-    // ──────────────────────────────────────────────
     public async Task<IActionResult> Index(string? cari)
     {
         ViewBag.Cari = cari;
@@ -23,9 +22,7 @@ public class LayananController : Controller
         return View(data);
     }
 
-    // ──────────────────────────────────────────────
     //  DETAILS — Lihat detail layanan
-    // ──────────────────────────────────────────────
     public async Task<IActionResult> Details(Guid id)
     {
         var layanan = await _svc.GetByIdAsync(id);
@@ -37,15 +34,14 @@ public class LayananController : Controller
         return View(layanan);
     }
 
-    // ──────────────────────────────────────────────
     //  CREATE — Tambah layanan baru
-    // ──────────────────────────────────────────────
-    public IActionResult Create()
+    public async Task<IActionResult> Create()
     {
         var model = new MLayanan
         {
-            TxtSatuan = "KG",       // default satuan
-            IntEstimasiHari = 3,    // default estimasi
+            TxtKodeLayanan = await _svc.GenerateKodeAsync(),
+            TxtSatuan = "KG",
+            IntEstimasiHari = 3,
             BolActive = true
         };
         return View(model);
@@ -70,9 +66,7 @@ public class LayananController : Controller
         return RedirectToAction(nameof(Index));
     }
 
-    // ──────────────────────────────────────────────
     //  EDIT — Ubah data layanan
-    // ──────────────────────────────────────────────
     public async Task<IActionResult> Edit(Guid id)
     {
         var layanan = await _svc.GetByIdAsync(id);
@@ -103,9 +97,7 @@ public class LayananController : Controller
         return RedirectToAction(nameof(Index));
     }
 
-    // ──────────────────────────────────────────────
     //  DELETE — Hapus layanan (POST only)
-    // ──────────────────────────────────────────────
     [HttpPost]
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> Delete(Guid id)
@@ -120,4 +112,3 @@ public class LayananController : Controller
         return RedirectToAction(nameof(Index));
     }
 }
-

@@ -15,9 +15,7 @@
     <div class="card-body py-2">
         <form method="get" asp-action="Index" class="row g-2 align-items-center">
             <div class="col-auto">
-                <label class="col-form-label">
-                    <i class="bi bi-search"></i> Cari:
-                </label>
+                <label class="col-form-label"><i class="bi bi-search"></i> Cari:</label>
             </div>
             <div class="col-md-4">
                 <input type="text" name="cari" value="@ViewBag.Cari"
@@ -111,4 +109,3 @@
 <div class="text-muted small mt-2">
     Total: @Model.Count layanan
 </div>
-

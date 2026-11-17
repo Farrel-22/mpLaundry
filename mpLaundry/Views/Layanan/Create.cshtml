@@ -15,8 +15,8 @@
             <div class="row mb-3">
                 <div class="col-md-6">
                     <label asp-for="TxtKodeLayanan" class="form-label"></label>
-                    <input asp-for="TxtKodeLayanan" class="form-control"
-                           placeholder="Contoh: LY001" maxlength="10" />
+                   <input asp-for="TxtKodeLayanan" class="form-control text-secondary bg-secondary-subtle fw-semibold"
+                          readonly tabindex="-1" style="cursor: not-allowed;" onfocus="this.blur()" />
                     <span asp-validation-for="TxtKodeLayanan" class="text-danger small"></span>
                 </div>
                 <div class="col-md-6">
@@ -40,8 +40,9 @@
                     <label asp-for="DecHarga" class="form-label"></label>
                     <div class="input-group">
                         <span class="input-group-text">Rp</span>
-                        <input asp-for="DecHarga" class="form-control" type="number"
-                               min="1" step="500" placeholder="0" />
+                        <input type="text" id="txtHargaDisplay" class="form-control" placeholder="0"
+                               oninput="formatRupiahInput(this)" required />
+                        <input type="hidden" asp-for="DecHarga" id="DecHargaReal" />
                     </div>
                     <span asp-validation-for="DecHarga" class="text-danger small"></span>
                 </div>
@@ -70,3 +71,17 @@
     </div>
 </div>
 
+@section Scripts {
+<script>
+    function formatRupiahInput(el) {
+        // Ambil angka saja (hapus titik)
+        let angka = el.value.replace(/\D/g, '');
+
+        // Simpan angka murni ke input hidden untuk C#
+        document.getElementById('DecHargaReal').value = angka;
+
+        // Format dengan titik ribuan di layar (contoh: 30000 -> 30.000)
+        el.value = angka ? new Intl.NumberFormat('id-ID').format(angka) : '';
+    }
+</script>
+}

@@ -1,11 +1,13 @@
 using Microsoft.AspNetCore.Mvc;
+using mpLaundry.Services.Interfaces;
 
 namespace mpLaundry.Controllers;
 
-public class HomeController : Controller
+public class HomeController(ILaundryService laundryService) : Controller
 {
-    public IActionResult Index()
+    public async Task<IActionResult> Index()
     {
-        return View();
+        var vm = await laundryService.GetDashboardAsync();
+        return View(vm);
     }
 }

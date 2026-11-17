@@ -14,7 +14,9 @@
             <div class="row mb-3">
                 <div class="col-md-6">
                     <label asp-for="TxtKodePelanggan" class="form-label"></label>
-                    <input asp-for="TxtKodePelanggan" class="form-control" placeholder="Contoh: PLG001" maxlength="10" />
+                    <input asp-for="TxtKodePelanggan" class="form-control text-secondary bg-secondary-subtle fw-semibold"
+                           readonly tabindex="-1" style="cursor: not-allowed;" onfocus="this.blur()" />
+                    <small class="text-muted">Kode otomatis dibuat oleh sistem</small>
                     <span asp-validation-for="TxtKodePelanggan" class="text-danger small"></span>
                 </div>
                 <div class="col-md-6">

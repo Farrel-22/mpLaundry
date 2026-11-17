@@ -33,9 +33,30 @@ public class PelangganService(LaundryDbContext db) : IPelangganService
     public Task<MPelanggan?> GetByIdAsync(Guid id) =>
         db.MPelanggan.AsNoTracking().FirstOrDefaultAsync(p => p.PkPelangganId == id);
 
-    // 4. Tambah pelanggan baru (Aturan: Kode harus unik)
+    // 4. Method untuk membuat kode pelanggan otomatis: PLG001, PLG002, dst.
+    public async Task<string> GenerateKodeAsync()
+    {
+        var prefix = "PLG";
+        var terakhir = await db.MPelanggan
+            .Where(p => p.TxtKodePelanggan.StartsWith(prefix))
+            .OrderByDescending(p => p.TxtKodePelanggan)
+            .Select(p => p.TxtKodePelanggan)
+            .FirstOrDefaultAsync();
+        int urut = 1;
+        if (terakhir != null && terakhir.Length > prefix.Length)
+        {
+            if (int.TryParse(terakhir[prefix.Length..], out int nomor))
+                urut = nomor + 1;
+        }
+        return $"{prefix}{urut:D3}";
+    }
+
+    // 5. Tambah pelanggan baru (Aturan: Kode harus unik)
     public async Task<ServiceResult> CreateAsync(MPelanggan pelanggan)
     {
+        if (string.IsNullOrWhiteSpace(pelanggan.TxtKodePelanggan))
+            pelanggan.TxtKodePelanggan = await GenerateKodeAsync();
+
         if (await KodeSudahAdaAsync(pelanggan.TxtKodePelanggan, null))
             return ServiceResult.Gagal("Kode pelanggan sudah digunakan.");
 
@@ -48,7 +69,7 @@ public class PelangganService(LaundryDbContext db) : IPelangganService
         return ServiceResult.Ok("Pelanggan berhasil ditambahkan.", pelanggan.PkPelangganId);
     }
 
-    // 5. Ubah data pelanggan (Aturan: Kode unik kecuali dirinya sendiri)
+    // 6. Ubah data pelanggan (Aturan: Kode unik kecuali dirinya sendiri)
     public async Task<ServiceResult> UpdateAsync(MPelanggan pelanggan)
     {
         var data = await db.MPelanggan.FindAsync(pelanggan.PkPelangganId);
@@ -71,7 +92,7 @@ public class PelangganService(LaundryDbContext db) : IPelangganService
         return ServiceResult.Ok("Pelanggan berhasil diubah.", data.PkPelangganId);
     }
 
-    // 6. Hapus pelanggan (Aturan: Jika sudah punya riwayat order, tolak hapus!)
+    // 7. Hapus pelanggan (Aturan FSD & BR-12: Jika sudah punya riwayat order, tolak hapus!)
     public async Task<ServiceResult> DeleteAsync(Guid id)
     {
         var data = await db.MPelanggan.FindAsync(id);
@@ -80,13 +101,12 @@ public class PelangganService(LaundryDbContext db) : IPelangganService
 
         // Cek apakah pelanggan pernah transaksi laundry
         if (await db.TrLaundry.AnyAsync(o => o.RefPelangganId == id))
-            return ServiceResult.Gagal(
-                "Pelanggan sudah memiliki riwayat order laundry. Nonaktifkan saja sebagai gantinya.");
+            return ServiceResult.Gagal("Pelanggan sudah memiliki riwayat order laundry. Penghapusan ditolak, silakan nonaktifkan pelanggan sebagai gantinya.");
 
         db.MPelanggan.Remove(data);
         await db.SaveChangesAsync();
 
-        return ServiceResult.Ok("Pelanggan berhasil dihapus.");
+        return ServiceResult.Ok($"Pelanggan {data.TxtNama} berhasil dihapus.");
     }
 
     // Helper pengecekan duplikasi kode

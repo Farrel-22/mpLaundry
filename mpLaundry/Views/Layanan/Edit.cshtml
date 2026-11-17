@@ -39,8 +39,10 @@
                     <label asp-for="DecHarga" class="form-label"></label>
                     <div class="input-group">
                         <span class="input-group-text">Rp</span>
-                        <input asp-for="DecHarga" class="form-control" type="number"
-                               min="1" step="500" />
+                        <input type="text" id="txtHargaDisplay" class="form-control"
+                                value="@Model.DecHarga.ToString("N0", new System.Globalization.CultureInfo("id-ID"))"
+                                oninput="formatRupiahInput(this)" required />
+                        <input type="hidden" asp-for="DecHarga" id="DecHargaReal" />
                     </div>
                     <span asp-validation-for="DecHarga" class="text-danger small"></span>
                 </div>
@@ -80,4 +82,14 @@
         </form>
     </div>
 </div>
+
+@section Scripts {
+<script>
+    function formatRupiahInput(el) {
+        let angka = el.value.replace(/\D/g, '');
+        document.getElementById('DecHargaReal').value = angka;
+        el.value = angka ? new Intl.NumberFormat('id-ID').format(angka) : '';
+    }
+</script>
+}
 

@@ -10,9 +10,13 @@ public class LayananService(LaundryDbContext db) : ILayananService
     public Task<List<MLayanan>> GetAllAsync(string? cari = null)
     {
         var query = db.MLayanan.AsNoTracking();
+
         if (!string.IsNullOrWhiteSpace(cari))
+        {
             query = query.Where(l => l.TxtKodeLayanan.Contains(cari)
                                   || l.TxtNamaLayanan.Contains(cari));
+        }
+
         return query.OrderBy(l => l.TxtNamaLayanan).ToListAsync();
     }
 
@@ -25,8 +29,32 @@ public class LayananService(LaundryDbContext db) : ILayananService
     public Task<MLayanan?> GetByIdAsync(Guid id) =>
         db.MLayanan.AsNoTracking().FirstOrDefaultAsync(l => l.PkLayananId == id);
 
+    // Method membuat kode layanan otomatis: LYN001, LYN002, dst.
+    public async Task<string> GenerateKodeAsync()
+    {
+        var prefix = "LYN";
+
+        var terakhir = await db.MLayanan
+            .Where(l => l.TxtKodeLayanan.StartsWith(prefix))
+            .OrderByDescending(l => l.TxtKodeLayanan)
+            .Select(l => l.TxtKodeLayanan)
+            .FirstOrDefaultAsync();
+
+        int urut = 1;
+        if (terakhir != null && terakhir.Length > prefix.Length)
+        {
+            if (int.TryParse(terakhir[prefix.Length..], out int nomor))
+                urut = nomor + 1;
+        }
+
+        return $"{prefix}{urut:D3}";
+    }
+
     public async Task<ServiceResult> CreateAsync(MLayanan layanan)
     {
+        if (string.IsNullOrWhiteSpace(layanan.TxtKodeLayanan))
+            layanan.TxtKodeLayanan = await GenerateKodeAsync();
+
         if (await KodeSudahAdaAsync(layanan.TxtKodeLayanan, null))
             return ServiceResult.Gagal("Kode layanan sudah digunakan.");
 
@@ -59,6 +87,7 @@ public class LayananService(LaundryDbContext db) : ILayananService
         return ServiceResult.Ok("Layanan berhasil diubah.", data.PkLayananId);
     }
 
+    // TC-04 & BR-12: Hapus Layanan (Tolak jika sudah ada order, hapus permanen jika belum pernah)
     public async Task<ServiceResult> DeleteAsync(Guid id)
     {
         var data = await db.MLayanan.FindAsync(id);
@@ -67,12 +96,12 @@ public class LayananService(LaundryDbContext db) : ILayananService
 
         // Layanan yang sudah dipakai transaksi tidak boleh dihapus
         if (await db.TrLaundryDetail.AnyAsync(d => d.RefLayananId == id))
-            return ServiceResult.Gagal(
-                "Layanan sudah dipakai transaksi. Nonaktifkan saja.");
+            return ServiceResult.Gagal("Layanan sudah dipakai transaksi. Penghapusan ditolak, silakan nonaktifkan layanan sebagai gantinya.");
 
         db.MLayanan.Remove(data);
         await db.SaveChangesAsync();
-        return ServiceResult.Ok("Layanan berhasil dihapus.");
+
+        return ServiceResult.Ok($"Layanan {data.TxtNamaLayanan} berhasil dihapus.");
     }
 
     private Task<bool> KodeSudahAdaAsync(string kode, Guid? kecualiId) =>
