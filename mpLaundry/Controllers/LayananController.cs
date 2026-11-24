@@ -52,17 +52,20 @@ public class LayananController : Controller
     public async Task<IActionResult> Create(MLayanan model)
     {
         if (!ModelState.IsValid)
+        {
+            TempData["Gagal"] = "Data layanan belum valid. Mohon periksa kembali kolom isian."; // 🔴 Banner Merah
             return View(model);
+        }
 
         var result = await _svc.CreateAsync(model);
 
         if (!result.Sukses)
         {
-            TempData["Gagal"] = result.Pesan;
+            TempData["Gagal"] = result.Pesan; // 🔴 Banner Merah
             return View(model);
         }
 
-        TempData["Sukses"] = result.Pesan;
+        TempData["Sukses"] = result.Pesan; // 🟢 Banner Hijau
         return RedirectToAction(nameof(Index));
     }
 
@@ -83,17 +86,20 @@ public class LayananController : Controller
     public async Task<IActionResult> Edit(MLayanan model)
     {
         if (!ModelState.IsValid)
+        {
+            TempData["Gagal"] = "Data layanan belum valid. Mohon periksa kembali kolom isian."; // 🔴 Banner Merah
             return View(model);
+        }
 
         var result = await _svc.UpdateAsync(model);
 
         if (!result.Sukses)
         {
-            TempData["Gagal"] = result.Pesan;
+            TempData["Gagal"] = result.Pesan; // 🔴 Banner Merah
             return View(model);
         }
 
-        TempData["Sukses"] = result.Pesan;
+        TempData["Sukses"] = result.Pesan; // 🟢 Banner Hijau
         return RedirectToAction(nameof(Index));
     }
 

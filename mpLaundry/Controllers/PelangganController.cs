@@ -49,17 +49,20 @@ public class PelangganController : Controller
     public async Task<IActionResult> Create(MPelanggan model)
     {
         if (!ModelState.IsValid)
+        {
+            TempData["Gagal"] = "Data belum lengkap. Mohon periksa kembali kolom isian."; // 🔴 Banner Merah
             return View(model);
+        }
 
         var result = await _svc.CreateAsync(model);
 
         if (!result.Sukses)
         {
-            TempData["Gagal"] = result.Pesan;
+            TempData["Gagal"] = result.Pesan; // 🔴 Banner Merah
             return View(model);
         }
 
-        TempData["Sukses"] = result.Pesan;
+        TempData["Sukses"] = result.Pesan; // 🟢 Banner Hijau
         return RedirectToAction(nameof(Index));
     }
 
@@ -81,17 +84,20 @@ public class PelangganController : Controller
     public async Task<IActionResult> Edit(MPelanggan model)
     {
         if (!ModelState.IsValid)
+        {
+            TempData["Gagal"] = "Data belum lengkap. Mohon periksa kembali kolom isian."; // 🔴 Banner Merah
             return View(model);
+        }
 
         var result = await _svc.UpdateAsync(model);
 
         if (!result.Sukses)
         {
-            TempData["Gagal"] = result.Pesan;
+            TempData["Gagal"] = result.Pesan; // 🔴 Banner Merah
             return View(model);
         }
 
-        TempData["Sukses"] = result.Pesan;
+        TempData["Sukses"] = result.Pesan; // 🟢 Banner Hijau
         return RedirectToAction(nameof(Index));
     }
 

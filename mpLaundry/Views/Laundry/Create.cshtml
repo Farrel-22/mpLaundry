@@ -36,8 +36,9 @@
                     <label asp-for="Bayar" class="form-label"></label>
                     <div class="input-group">
                         <span class="input-group-text">Rp</span>
-                        <input asp-for="Bayar" class="form-control" type="number"
-                               min="0" step="1000" placeholder="0" />
+                        <input type="text" id="txtBayarDisplay" class="form-control" placeholder="0"
+                               oninput="formatRupiahBayar(this)" />
+                        <input type="hidden" asp-for="Bayar" id="BayarReal" value="0" />
                     </div>
                     <span asp-validation-for="Bayar" class="text-danger small"></span>
                 </div>
@@ -222,16 +223,13 @@
         return 'Rp ' + Math.round(n).toLocaleString('id-ID');
     }
 
-    // ── Validasi minimal 1 item sebelum submit ──
-    document.getElementById('formOrder').addEventListener('submit', function(e) {
-        if (tbody.rows.length === 0) {
-            e.preventDefault();
-            alert('Tambahkan minimal 1 item layanan!');
-        }
-    });
-
-    // ── Event tombol Tambah Item ──
     document.getElementById('btnTambahItem').addEventListener('click', tambahBaris);
+
+    function formatRupiahBayar(el) {
+        let angka = el.value.replace(/\D/g, '');
+        document.getElementById('BayarReal').value = angka || '0';
+        el.value = angka ? new Intl.NumberFormat('id-ID').format(angka) : '';
+    }
 
     // ── Otomatis tambah 1 baris saat halaman dibuka ──
     tambahBaris();

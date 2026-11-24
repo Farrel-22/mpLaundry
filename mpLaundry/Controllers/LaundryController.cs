@@ -33,19 +33,30 @@ public class LaundryController(
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> Create(LaundryCreateVM vm)
     {
-        if (ModelState.IsValid)
+        // Jika form tidak valid (misal pelanggan belum dipilih)
+        if (!ModelState.IsValid)
         {
-            var hasil = await laundryService.CreateAsync(vm);
-            if (hasil.Sukses)
-            {
-                TempData["Sukses"] = hasil.Pesan;
-                // Begitu berhasil disimpan, kasir langsung diarahkan ke halaman Nota/Details
-                return RedirectToAction(nameof(Details), new { id = hasil.Id });
-            }
-            ModelState.AddModelError("", hasil.Pesan);
+            var pesanError = ModelState.Values
+                .SelectMany(v => v.Errors)
+                .Select(e => e.ErrorMessage)
+                .FirstOrDefault() ?? "Mohon lengkapi semua data order yang wajib diisi.";
+
+            TempData["Gagal"] = pesanError; // 🔴 Munculkan Banner Merah
+            await IsiDropdownAsync();
+            return View(vm);
         }
-        await IsiDropdownAsync();
-        return View(vm);
+
+        var hasil = await laundryService.CreateAsync(vm);
+
+        if (!hasil.Sukses)
+        {
+            TempData["Gagal"] = hasil.Pesan; // 🔴 Munculkan Banner Merah
+            await IsiDropdownAsync();
+            return View(vm);
+        }
+
+        TempData["Sukses"] = hasil.Pesan; // 🟢 Munculkan Banner Hijau
+        return RedirectToAction(nameof(Details), new { id = hasil.Id });
     }
     // 4. Halaman Nota Kasir / Detail Order
     public async Task<IActionResult> Details(Guid id)

@@ -1,4 +1,4 @@
-﻿@model TrLaundry
+@model TrLaundry
 @using mpLaundry.Common
 @using mpLaundry.Common.Helpers
 @{
@@ -145,12 +145,15 @@
                     @* 2. Form Pelunasan Pembayaran *@
                     @if (sisa > 0)
                     {
+                        var sisaFormat = sisa.ToString("N0", new System.Globalization.CultureInfo("id-ID"));
                         <form asp-action="Bayar" asp-route-id="@Model.PkLaundryId" method="post" class="d-flex gap-2">
                             @Html.AntiForgeryToken()
                             <div class="input-group" style="width: 220px;">
                                 <span class="input-group-text">Rp</span>
-                                <input type="number" name="jumlah" min="1" max="@sisa" value="@sisa"
-                                       class="form-control" required />
+                                <input type="text" id="txtBayarDisplay" class="form-control"
+                                       value="@sisaFormat"
+                                       oninput="formatRupiahPelunasan(this)" required />        
+                                <input type="hidden" name="jumlah" id="jumlahReal" value="@sisa" />
                             </div>
                             <button type="submit" class="btn btn-success">
                                 <i class="bi bi-cash-coin"></i> Bayar
@@ -198,3 +201,13 @@
         }
     }
 </style>    
+@section Scripts {
+<script>
+    // ── Format input pelunasan dengan titik ribuan realtime ──
+    function formatRupiahPelunasan(el) {
+        let angka = el.value.replace(/\D/g, '');
+        document.getElementById('jumlahReal').value = angka || '0';
+        el.value = angka ? new Intl.NumberFormat('id-ID').format(angka) : '';
+    }
+</script>
+}

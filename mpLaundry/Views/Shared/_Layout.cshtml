@@ -20,6 +20,22 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet" />
 
     <style>
+        /* Efek teks bayangan/contoh (placeholder) agar abu-abu lembut dan miring */
+        ::placeholder {
+            color: #94A3B8 !important; /* Abu-abu lembut */
+            opacity: 0.8 !important;
+            font-style: italic !important; /* Huruf miring penanda itu hanya contoh */
+        }
+
+        :-ms-input-placeholder {
+            color: #94A3B8 !important;
+            font-style: italic !important;
+        }
+
+        ::-ms-input-placeholder {
+            color: #94A3B8 !important;
+            font-style: italic !important;
+        }
         :root {
             --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
             --sidebar-width: 250px;
